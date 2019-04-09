@@ -27,7 +27,7 @@ class MapDisplayView: UIView {
     
     
     internal convenience required init?(coder aDecoder: NSCoder) {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     override func awakeFromNib() {
@@ -54,22 +54,22 @@ class MapDisplayView: UIView {
      3. View calls layers to change
      */
     func movePointTo(x: Double, y: Double) {
-        pathLayer.movePointTo(x, y: y)
+        pathLayer.movePointTo(x: x, y: y)
     }
     func cleanPath() {
         pathLayer.cleanPath()
     }
     func setScale(scale: Double) {
         textLayer.scaleValue = scale
-        pathLayer.setScale(scale)
+        pathLayer.setScale(scale: scale)
     }
     
     func changeScale(recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
-        case .Ended:
+        case .ended:
             
             pinchScale *= recognizer.scale
-            pinchScale = toZeroPointFiveMultiples(pinchScale) // let pinchScale always be the multiples of 0.5 to keep the textLayer clean.
+            pinchScale = toZeroPointFiveMultiples(x: pinchScale) // let pinchScale always be the multiples of 0.5 to keep the textLayer clean.
             
             if pinchScale == 0 { // restrict the minimum scale to 0.5 instead of 0, otherwise the scale will always be 0 afterwards.
                 pinchScale = 0.5
@@ -78,7 +78,7 @@ class MapDisplayView: UIView {
             let times = pinchScale/CGFloat(textLayer.scaleValue)
             
             if textLayer.scaleValue != 0.5 || pinchScale != 0.5 {
-                pathLayer.setScale(Double(1/times))
+                pathLayer.setScale(scale: Double(1/times))
             }
             
             textLayer.scaleValue = Double(pinchScale)
@@ -89,9 +89,9 @@ class MapDisplayView: UIView {
     }
     
     func setOrigin(x: Double, y: Double) {
-        pathLayer.setOrigin(x, y: y)
+        pathLayer.setOrigin(x: x, y: y)
         //gridLayer.setOrigin(x, y: y)
-        textLayer.setOrigin(x, y: y)
+        textLayer.setOrigin(x: x, y: y)
     }
 
 }

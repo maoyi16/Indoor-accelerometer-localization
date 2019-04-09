@@ -26,10 +26,10 @@ class GridView: UIView {
         setNeedsDisplay()
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         // Draw nothing when the rect is too small
-        if CGRectGetWidth(rect) < 1 || CGRectGetHeight(rect) < 1 {
+        if rect.width < 1 || rect.height < 1 {
             return
         }
         
@@ -37,12 +37,12 @@ class GridView: UIView {
         self.layer.sublayers?.removeAll() // removes the previous textLayer if has any
         let textLayer: TextLayer = TextLayer(frame: self.frame)
         textLayer.scaleValue = scaleValueForTheText
-        textLayer.setOrigin(Double(origin.x), y: Double(origin.y))
+        textLayer.setOrigin(x: Double(origin.x), y: Double(origin.y))
         self.layer.addSublayer(textLayer)
         
         
         /* Draw Grids */
-        let centerPoint = CGPointMake(origin.x, origin.y)
+        let centerPoint = CGPoint(x: origin.x, y: origin.y)
         
         // draw the grid
         let gridPath = UIBezierPath()
@@ -61,52 +61,52 @@ class GridView: UIView {
         
         for i in 0...Int(bounds.height) {
             if i == 0 {
-                axisPath.moveToPoint(CGPoint(x: CGFloat(0), y: centerPoint.y + CGFloat(i) * gridSize))
-                axisPath.addLineToPoint(CGPoint(x: bounds.width, y: centerPoint.y + CGFloat(i) * gridSize))
+                axisPath.move(to: CGPoint(x: CGFloat(0), y: centerPoint.y + CGFloat(i) * gridSize))
+                axisPath.addLine(to: CGPoint(x: bounds.width, y: centerPoint.y + CGFloat(i) * gridSize))
                 continue
             }
-            if Double(i)%2 == 0 {
-                scalePath.moveToPoint(CGPoint(x: centerPoint.x, y: centerPoint.y + CGFloat(i) * gridSize))
-                scalePath.addLineToPoint(CGPoint(x: centerPoint.x + 5, y: centerPoint.y + CGFloat(i) * gridSize))
+            if Double(i).truncatingRemainder(dividingBy: 2) == 0 {
+                scalePath.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y + CGFloat(i) * gridSize))
+                scalePath.addLine(to: CGPoint(x: centerPoint.x + 5, y: centerPoint.y + CGFloat(i) * gridSize))
                 
-                scalePath.moveToPoint(CGPoint(x: centerPoint.x, y: centerPoint.y - CGFloat(i) * gridSize))
-                scalePath.addLineToPoint(CGPoint(x: centerPoint.x + 5, y: centerPoint.y - CGFloat(i) * gridSize))
+                scalePath.move(to: CGPoint(x: centerPoint.x, y: centerPoint.y - CGFloat(i) * gridSize))
+                scalePath.addLine(to: CGPoint(x: centerPoint.x + 5, y: centerPoint.y - CGFloat(i) * gridSize))
             }
             
-            gridPath.moveToPoint(CGPoint(x: CGFloat(0), y: centerPoint.y + CGFloat(i) * gridSize))
-            gridPath.addLineToPoint(CGPoint(x: bounds.width, y: centerPoint.y + CGFloat(i) * gridSize))
+            gridPath.move(to: CGPoint(x: CGFloat(0), y: centerPoint.y + CGFloat(i) * gridSize))
+            gridPath.addLine(to: CGPoint(x: bounds.width, y: centerPoint.y + CGFloat(i) * gridSize))
             
-            gridPath.moveToPoint(CGPoint(x: CGFloat(0), y: centerPoint.y - CGFloat(i) * gridSize))
-            gridPath.addLineToPoint(CGPoint(x: bounds.width, y: centerPoint.y - CGFloat(i) * gridSize))
+            gridPath.move(to: CGPoint(x: CGFloat(0), y: centerPoint.y - CGFloat(i) * gridSize))
+            gridPath.addLine(to: CGPoint(x: bounds.width, y: centerPoint.y - CGFloat(i) * gridSize))
         }
         
         for i in 0...Int(bounds.width) {
             if i == 0 {
-                axisPath.moveToPoint(CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: CGFloat(0)))
-                axisPath.addLineToPoint(CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: bounds.height))
+                axisPath.move(to: CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: CGFloat(0)))
+                axisPath.addLine(to: CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: bounds.height))
                 continue
             }
-            if Double(i)%2 == 0 {
-                scalePath.moveToPoint(CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: centerPoint.y - 5))
-                scalePath.addLineToPoint(CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: centerPoint.y))
+            if Double(i).truncatingRemainder(dividingBy: 2) == 0 {
+                scalePath.move(to: CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: centerPoint.y - 5))
+                scalePath.addLine(to: CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: centerPoint.y))
                 
-                scalePath.moveToPoint(CGPoint(x: centerPoint.x -  CGFloat(i) * gridSize, y: centerPoint.y - 5))
-                scalePath.addLineToPoint(CGPoint(x: centerPoint.x - CGFloat(i) * gridSize, y: centerPoint.y))
+                scalePath.move(to: CGPoint(x: centerPoint.x -  CGFloat(i) * gridSize, y: centerPoint.y - 5))
+                scalePath.addLine(to: CGPoint(x: centerPoint.x - CGFloat(i) * gridSize, y: centerPoint.y))
             }
             
-            gridPath.moveToPoint(CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: CGFloat(0)))
-            gridPath.addLineToPoint(CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: bounds.height))
+            gridPath.move(to: CGPoint(x: centerPoint.x +  CGFloat(i) * gridSize, y: CGFloat(0)))
+            gridPath.addLine(to: CGPoint(x: centerPoint.x + CGFloat(i) * gridSize, y: bounds.height))
             
             
-            gridPath.moveToPoint(CGPoint(x: centerPoint.x -  CGFloat(i) * gridSize, y: CGFloat(0)))
-            gridPath.addLineToPoint(CGPoint(x: centerPoint.x - CGFloat(i) * gridSize, y: bounds.height))
+            gridPath.move(to: CGPoint(x: centerPoint.x -  CGFloat(i) * gridSize, y: CGFloat(0)))
+            gridPath.addLine(to: CGPoint(x: centerPoint.x - CGFloat(i) * gridSize, y: bounds.height))
         }
         
-        UIColor.blackColor().colorWithAlphaComponent(0.1).set()
+        UIColor.black.withAlphaComponent(0.1).set()
         gridPath.stroke()
-        UIColor.blackColor().set()
+        UIColor.black.set()
         scalePath.stroke()
-        UIColor.blackColor().set()
+        UIColor.black.set()
         axisPath.stroke()
     }
 }
@@ -116,8 +116,8 @@ class GradientView: UIView {
     
     override var frame: CGRect { didSet { setNeedsDisplay() } }
     
-    private var topColor: CGColor = UIColor.clearColor().CGColor
-    private var bottomColor: CGColor = UIColor.clearColor().CGColor
+    private var topColor: CGColor = UIColor.clear.cgColor
+    private var bottomColor: CGColor = UIColor.clear.cgColor
     
     func colorSetUp(topColor: CGColor, bottomColor: CGColor) {
         self.topColor = topColor
@@ -125,8 +125,8 @@ class GradientView: UIView {
         setNeedsDisplay()
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         self.layer.sublayers?.removeAll()
-        self.layerGradient(topColor, bottomColor: bottomColor)
+        self.layerGradient(topColor: topColor, bottomColor: bottomColor)
     }
 }

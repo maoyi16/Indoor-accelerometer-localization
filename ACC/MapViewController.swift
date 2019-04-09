@@ -16,7 +16,7 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     var origin = ThreeAxesSystem<Double>(x: 0, y: 0, z: 0)
     
     // MARK: PublicDB used to pass the object of DataProcessor
-    var publicDB = NSUserDefaults.standardUserDefaults()
+    var publicDB = UserDefaults.standard
     
     // MARK: Multi-views declaration
     @IBOutlet weak var gradientView: GradientView!
@@ -31,19 +31,19 @@ class MapViewController: UIViewController, DataProcessorDelegate {
             
             // add swipe gestures recog
             let rightSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(MapViewController.moveScreenToRight))
-            rightSwipeGestureRecognizer.direction = .Right
+            rightSwipeGestureRecognizer.direction = .right
             mapView.addGestureRecognizer(rightSwipeGestureRecognizer)
             
             let upSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(MapViewController.moveScreenToUp))
-            upSwipeGestureRecognizer.direction = .Up
+            upSwipeGestureRecognizer.direction = .up
             mapView.addGestureRecognizer(upSwipeGestureRecognizer)
             
             let downSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(MapViewController.moveScreenToDown))
-            downSwipeGestureRecognizer.direction = .Down
+            downSwipeGestureRecognizer.direction = .down
             mapView.addGestureRecognizer(downSwipeGestureRecognizer)
             
             let leftSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(MapViewController.moveScreenToLeft))
-            leftSwipeGestureRecognizer.direction = .Left
+            leftSwipeGestureRecognizer.direction = .left
             mapView.addGestureRecognizer(leftSwipeGestureRecognizer)
             
         }
@@ -54,9 +54,9 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     
     func changeScale(recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
-        case .Changed, .Ended:
+        case .changed, .ended:
             pinchScale *= recognizer.scale
-            pinchScale = toZeroPointFiveMultiples(pinchScale) // let pinchScale always be the multiples of 0.5 to keep the textLayer clean.
+            pinchScale = toZeroPointFiveMultiples(x: pinchScale) // let pinchScale always be the multiples of 0.5 to keep the textLayer clean.
             
             if pinchScale == 0 { // restrict the minimum scale to 0.5 instead of 0, otherwise the scale will always be 0 afterwards.
                 pinchScale = 0.5
@@ -65,10 +65,10 @@ class MapViewController: UIViewController, DataProcessorDelegate {
             let times = pinchScale/CGFloat(gridView.scaleValueForTheText)
             
             if gridView.scaleValueForTheText != 0.5 || pinchScale != 0.5 {
-                mapView.setScale(Double(1/times))
+                mapView.setScale(scale: Double(1/times))
             }
             
-            gridView.setScale(Double(pinchScale))
+            gridView.setScale(scale: Double(pinchScale))
             recognizer.scale = 1
         default:
             break
@@ -79,28 +79,28 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     var shiftedBySwipe = ThreeAxesSystem<Double>(x:0, y:0, z:0)
     let shiftAmount: Double = 20
     
-    func moveScreenToRight() {
+    @objc func moveScreenToRight() {
         shiftedBySwipe.x += shiftAmount
         origin.x += shiftAmount
-        setOrigin(origin.x, y: origin.y)
+        setOrigin(x: origin.x, y: origin.y)
     }
     
-    func moveScreenToUp() {
+    @objc func moveScreenToUp() {
         shiftedBySwipe.y -= shiftAmount
         origin.y -= shiftAmount
-        setOrigin(origin.x, y: origin.y)
+        setOrigin(x: origin.x, y: origin.y)
     }
     
-    func moveScreenToDown() {
+    @objc func moveScreenToDown() {
         shiftedBySwipe.y += shiftAmount
         origin.y += shiftAmount
-        setOrigin(origin.x, y: origin.y)
+        setOrigin(x: origin.x, y: origin.y)
     }
     
-    func moveScreenToLeft() {
+    @objc func moveScreenToLeft() {
         shiftedBySwipe.x -= shiftAmount
         origin.x -= shiftAmount
-        setOrigin(origin.x, y: origin.y)
+        setOrigin(x: origin.x, y: origin.y)
     }
     
     // MARK: Outlets
@@ -118,51 +118,52 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     }
     
     private func setOrigin(x: Double, y: Double) {
-        gridView?.setOrigin(x, y: y)
-        mapView?.setOrigin(x, y: y)
+        gridView?.setOrigin(x: x, y: y)
+        mapView?.setOrigin(x: x, y: y)
     }
     
     private func updateUIWithGivenFrame(originX: CGFloat, originY: CGFloat, width: CGFloat, height: CGFloat) {
         // All view are set based on the "gradientView" (background)
-        gradientView.frame = CGRectMake(originX, originY, width, height)
+        gradientView.frame = CGRect(x: originX, y: originY, width: width, height: height)
         gridView.frame = gradientView.frame
         mapView.frame = gradientView.frame
         (origin.x, origin.y) = (Double(gradientView.frame.midX) + shiftedBySwipe.x, Double(gradientView.frame.midY) + shiftedBySwipe.y)
-        setOrigin(origin.x, y: origin.y)
+        setOrigin(x: origin.x, y: origin.y)
     }
     
     // MARK: Override functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(receiveDataSource(_:)), name:"dataSource", object: nil)
+        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(receiveDataSource(_:)), name:"dataSource", object: nil)
         
         // Objects setup
-        gradientView.colorSetUp(UIColor.whiteColor().CGColor, bottomColor: UIColor.cyanColor().colorWithAlphaComponent(0.5).CGColor)
+        gradientView.colorSetUp(topColor: UIColor.white.cgColor, bottomColor: UIColor.cyan.withAlphaComponent(0.5).cgColor)
         
-        gridView.backgroundColor = UIColor.clearColor()
-        gridView.setScale(1.0)
+        gridView.backgroundColor = UIColor.clear
+        gridView.setScale(scale: 1.0)
         
-        mapView.backgroundColor = UIColor.clearColor()
-        mapView.setScale(1.0)
+        mapView.backgroundColor = UIColor.clear
+        mapView.setScale(scale: 1.0)
         
-        updateUIWithGivenFrame(view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.width, height: view.frame.height)
+        updateUIWithGivenFrame(originX: view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.width, height: view.frame.height)
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        if UIDevice.currentDevice().orientation.isLandscape.boolValue {
+    override func viewWillTransition(to size: CGSize,
+                                     with coordinator: UIViewControllerTransitionCoordinator) {
+        if UIDevice.current.orientation.isLandscape {
             // Landscape orientation
             if mapView != nil {
-                updateUIWithGivenFrame(view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.height, height: view.frame.width)
+                updateUIWithGivenFrame(originX: view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.height, height: view.frame.width)
             }
      } else {
             // Portrait orientation
             if mapView != nil {
-                updateUIWithGivenFrame(view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.height, height: view.frame.width)
+                updateUIWithGivenFrame(originX: view.frame.origin.x, originY: view.frame.origin.y, width: view.frame.height, height: view.frame.width)
             }
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         dataSource?.delegate = self
     }
@@ -179,16 +180,16 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     func sendingNewData(person: DataProcessor, type: speedDataType, data: ThreeAxesSystemDouble) {
         switch type {
         case .accelerate:
-            accX.text = "\(roundNum(Double(data.x)))"
-            accY.text = "\(roundNum(Double(data.y)))"
+            accX.text = "\(roundNum(number: Double(data.x)))"
+            accY.text = "\(roundNum(number: Double(data.y)))"
         case .velocity:
-            velX.text = "\(roundNum(Double(data.x)))"
-            velY.text = "\(roundNum(Double(data.y)))"
+            velX.text = "\(roundNum(number: Double(data.x)))"
+            velY.text = "\(roundNum(number: Double(data.y)))"
         case .distance:
             let magnify = 20.0 // this var is used to make the movement more observable. Basically, if the scale of the map is 1, then magnify should be 20. if 2, then 40.
-            mapView.movePointTo(Double(data.x) * magnify, y: Double(data.y) * magnify)
-            disX.text = "\(roundNum(Double(data.x)))"
-            disY.text = "\(roundNum(Double(data.y)))"
+            mapView.movePointTo(x: Double(data.x) * magnify, y: Double(data.y) * magnify)
+            disX.text = "\(roundNum(number: Double(data.x)))"
+            disY.text = "\(roundNum(number: Double(data.y)))"
         case .rotation:
             //rotX.text = "\(roundNum(Double(data.pitch)))"
             break

@@ -15,6 +15,6 @@ extension UIView {
         //layer.cornerRadius = CGFloat(frame.width / 20)
         
         layer.colors = [topColor, bottomColor]
-        self.layer.insertSublayer(layer, atIndex: 0)
+        self.layer.insertSublayer(layer, at: 0)
     }
 }

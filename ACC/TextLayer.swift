@@ -11,9 +11,9 @@ import UIKit
 class TextLayer: CATextLayer {
     /// Indicate the color of the grid line.
     @IBInspectable
-    var textColor: UIColor = UIColor.blackColor() {
+    var textColor: UIColor = UIColor.black {
         didSet {
-            self.foregroundColor = textColor.CGColor
+            self.foregroundColor = textColor.cgColor
             self.setNeedsDisplay()
         }
     }
@@ -29,19 +29,19 @@ class TextLayer: CATextLayer {
     init(frame: CGRect) {
         super.init()
         self.frame = frame
-        self.foregroundColor = textColor.CGColor
-        self.backgroundColor = UIColor.clearColor().CGColor
+        self.foregroundColor = textColor.cgColor
+        self.backgroundColor = UIColor.clear.cgColor
         
     }
     
     internal convenience required init?(coder aDecoder: NSCoder) {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     override var frame: CGRect {
         didSet {
             updateUI()
-            updateBounds(bounds)
+            updateBounds(rect: bounds)
         }
     }
     
@@ -52,14 +52,14 @@ class TextLayer: CATextLayer {
     }
     
     private func showIntIfCan(aDouble: Double) -> String {
-        return aDouble%1 != 0 ? "\(aDouble)" : "\(Int(aDouble))"
+        return aDouble.truncatingRemainder(dividingBy: 1) != 0 ? "\(aDouble)" : "\(Int(aDouble))"
     }
     
     private func updateUI() {
         
         self.sublayers?.removeAll()
         
-        let centerPoint = CGPointMake(origin.x, origin.y)
+        let centerPoint = CGPoint(x: origin.x, y: origin.y)
         
         for i in 0..<Int(bounds.width) {
             
@@ -70,12 +70,12 @@ class TextLayer: CATextLayer {
                 shift = -15
             }
             
-            let positiveXNums = drawTextLayer(CGRectMake(-3 + centerPoint.x + CGFloat(i)*20, centerPoint.y + shift, 30, 30), printText: showIntIfCan(Double(i) * scaleValue))
+            let positiveXNums = drawTextLayer(frame: CGRect(x: -3 + centerPoint.x + CGFloat(i)*20, y: centerPoint.y + shift, width: 30, height: 30), printText: showIntIfCan(aDouble: Double(i) * scaleValue))
             self.addSublayer(positiveXNums)
             
             if i == 0 { continue }
             
-            let negativeXNums = drawTextLayer(CGRectMake(-3 + centerPoint.x + CGFloat(-i)*20, centerPoint.y + shift, 30, 30), printText: showIntIfCan(Double(-i) * scaleValue))
+            let negativeXNums = drawTextLayer(frame: CGRect(x: -3 + centerPoint.x + CGFloat(-i)*20, y: centerPoint.y + shift, width: 30, height: 30), printText: showIntIfCan(aDouble: Double(-i) * scaleValue))
             self.addSublayer(negativeXNums)
         }
         
@@ -83,10 +83,10 @@ class TextLayer: CATextLayer {
             
             if i == 0 { continue }
             
-            let positiveYNums = drawTextLayer(CGRectMake(-20 + centerPoint.x, -8 + centerPoint.y + CGFloat(-i)*20 , 30, 30), printText: showIntIfCan(Double(i) * scaleValue))
+            let positiveYNums = drawTextLayer(frame: CGRect(x: -20 + centerPoint.x, y: -8 + centerPoint.y + CGFloat(-i)*20 , width: 30, height: 30), printText: showIntIfCan(aDouble: Double(i) * scaleValue))
             self.addSublayer(positiveYNums)
             
-            let negativeYNums = drawTextLayer(CGRectMake(-25 + centerPoint.x, -8 + centerPoint.y + CGFloat(i)*20 , 30, 30), printText: showIntIfCan(Double(-i) * scaleValue))
+            let negativeYNums = drawTextLayer(frame: CGRect(x: -25 + centerPoint.x, y: -8 + centerPoint.y + CGFloat(i)*20 , width: 30, height: 30), printText: showIntIfCan(aDouble: Double(-i) * scaleValue))
             self.addSublayer(negativeYNums)
         }
     }
@@ -96,7 +96,7 @@ class TextLayer: CATextLayer {
         text.fontSize = 10
         text.frame = frame
         text.string = printText
-        text.foregroundColor = UIColor.blackColor().CGColor
+        text.foregroundColor = UIColor.black.cgColor
         return text
     }
     

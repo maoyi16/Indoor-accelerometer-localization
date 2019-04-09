@@ -10,35 +10,35 @@ import UIKit
 
 class PathLayer: CAShapeLayer {
     /// Indicate the color of the grid line.
-    @IBInspectable var pathColor:UIColor = UIColor.blueColor() {
+    @IBInspectable var pathColor:UIColor = UIColor.blue {
         didSet {
-            self.strokeColor = pathColor.CGColor
+            self.strokeColor = pathColor.cgColor
             self.setNeedsDisplay()
         }
     }
     
     var circleColor: UIColor = UIColor.init(red: 0, green: 71/255.0, blue: 102/255.0, alpha: 0.8) {
         didSet {
-            self.fillColor = circleColor.CGColor
+            self.fillColor = circleColor.cgColor
             self.setNeedsDisplay()
         }
     }
     
     init(frame: CGRect) {
         super.init()
-        self.strokeColor = pathColor.CGColor
-        self.fillColor = circleColor.CGColor
-        self.backgroundColor = UIColor.clearColor().CGColor
+        self.strokeColor = pathColor.cgColor
+        self.fillColor = circleColor.cgColor
+        self.backgroundColor = UIColor.clear.cgColor
         self.frame = frame
     }
     
     internal convenience required init?(coder aDecoder: NSCoder) {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     override var frame: CGRect {
         didSet {
-            updatePath(bounds)
+            updatePath(rect: bounds)
             updateRoutePath()
         }
     }
@@ -133,7 +133,7 @@ class PathLayer: CAShapeLayer {
     
     private func updatePath(rect: CGRect) {
         // Draw nothing when the rect is too small
-        if CGRectGetWidth(rect) < 1 || CGRectGetHeight(rect) < 1 {
+        if rect.width < 1 || rect.height < 1 {
             return
         }
         self.setNeedsDisplay()
@@ -146,22 +146,22 @@ class PathLayer: CAShapeLayer {
         if isResetScale {
             routePath.removeAllPoints()
             for i in 0..<(pathPoints.count - 1) {
-                routePath.moveToPoint(CGPoint(x: pathPoints[i].x + currentOrigin.x, y: pathPoints[i].y + currentOrigin.y))
-                routePath.addLineToPoint(CGPoint(x: pathPoints[i+1].x + currentOrigin.x, y: pathPoints[i+1].y + currentOrigin.y))
+                routePath.move(to: CGPoint(x: pathPoints[i].x + currentOrigin.x, y: pathPoints[i].y + currentOrigin.y))
+                routePath.addLine(to: CGPoint(x: pathPoints[i+1].x + currentOrigin.x, y: pathPoints[i+1].y + currentOrigin.y))
             }
             isResetScale = false
             
         } else {
-            routePath.moveToPoint(CGPoint(x: previousPoint.x + currentOrigin.x, y: previousPoint.y + currentOrigin.y))
-            routePath.addLineToPoint(CGPoint(x: currentPoint.x + currentOrigin.x, y: currentPoint.y + currentOrigin.y))
+            routePath.move(to: CGPoint(x: previousPoint.x + currentOrigin.x, y: previousPoint.y + currentOrigin.y))
+            routePath.addLine(to: CGPoint(x: currentPoint.x + currentOrigin.x, y: currentPoint.y + currentOrigin.y))
         }
         
         var circle = UIBezierPath()
         circle = getCircle(atCenter: CGPoint(x: currentPoint.x + currentOrigin.x, y: currentPoint.y + currentOrigin.y), radius: CGFloat(5))
         
-        drawing.appendPath(routePath)
-        drawing.appendPath(circle)
-        self.path = drawing.CGPath
+        drawing.append(routePath)
+        drawing.append(circle)
+        self.path = drawing.cgPath
         
         self.setNeedsDisplay()
     }

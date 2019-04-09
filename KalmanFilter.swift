@@ -10,7 +10,7 @@ import Foundation
 import CoreMotion
 
 // MARK: operator define
-infix operator ^ {}
+infix operator ^
 func ^ (radix: Double, power: Double) -> Double {
     return pow(radix, power)
 }
@@ -110,9 +110,9 @@ class KalmanFilter : Filter {
         F[0,3] = 1.0
         F[1,4] = 1.0
         F[2,5] = 1.0
-        F[0,6] = 1/2*deviceMotionUpdateInterval^2
-        F[1,7] = 1/2*deviceMotionUpdateInterval^2
-        F[2,8] = 1/2*deviceMotionUpdateInterval^2
+        F[0,6] = 1/2*(deviceMotionUpdateInterval^2)
+        F[1,7] = 1/2*(deviceMotionUpdateInterval^2)
+        F[2,8] = 1/2*(deviceMotionUpdateInterval^2)
         F[3,3] = 1.0
         F[4,4] = 1.0
         F[5,5] = 1.0
@@ -190,8 +190,8 @@ func SimpleLinearRegression (x: [Double], y: [Double]) -> (Double, Double) {
 func standardDeviation(arr : [Double]) -> Double
 {
     let length = Double(arr.count)
-    let avg = arr.reduce(0, combine: {$0 + $1}) / length
-    let sumOfSquaredAvgDiff = arr.map { pow($0 - avg, 2.0)}.reduce(0, combine: {$0 + $1})
+    let avg = arr.reduce(0, {$0 + $1}) / length
+    let sumOfSquaredAvgDiff = arr.map { pow($0 - avg, 2.0)}.reduce(0, {$0 + $1})
     return sqrt(sumOfSquaredAvgDiff / length)
 }
 
