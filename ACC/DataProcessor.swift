@@ -67,7 +67,7 @@ class DataProcessor {
     
     // MARK: Static judement
     var staticStateJudge = (modulAcc: false, modulGyro: false, modulDiffAcc: false) // true: static false: dynamic
-    var arrayForStatic = [Double](_unsafeUninitializedCapacity: 7, initializingWith: -1)
+    var arrayForStatic = Array<Double>(repeating: -1, count: 7)
     var index = 0
     var modulusDiff = -1.0
     
@@ -116,12 +116,12 @@ class DataProcessor {
             }
         })
         
-        motionManager.startDeviceMotionUpdatesUsingReferenceFrame(CMAttitudeReferenceFrame.XArbitraryCorrectedZVertical , toQueue: OperationQueue.currentQueue()!, withHandler: { (motion,  error) in
+        motionManager.startDeviceMotionUpdates(using: CMAttitudeReferenceFrame.xArbitraryCorrectedZVertical , to: OperationQueue.current!, withHandler: { (motion,  error) in
             if motion != nil {
-                self.XArbitraryCorrectedZVertical(motion!)
+                self.XArbitraryCorrectedZVertical(motion: motion!)
             }
             if error != nil {
-                print("\(error)")
+                print("\(String(describing: error))")
             }
         })
     }
@@ -271,12 +271,12 @@ class DataProcessor {
                 arrayForStatic[i] = arrayForStatic[i + 1]
                 accModulusAvg += arrayForStatic[i]
             }
-            arrayForStatic[index - 1] = modulus(accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z)
+            arrayForStatic[index - 1] = modulus(x: accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z)
             accModulusAvg += arrayForStatic[index - 1]
             accModulusAvg /= Double(arrayForStatic.count)
             modulusDiff = modulusDifference(arr: arrayForStatic, avgModulus: accModulusAvg)
         } else {
-            arrayForStatic[index] = modulus(accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z)
+            arrayForStatic[index] = modulus(x: accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z)
             index += 1
             if index == arrayForStatic.count {
                 for element in arrayForStatic {
@@ -294,26 +294,26 @@ class DataProcessor {
         var resultX = 0.0
         var resultY = 0.0
         var resultZ = 0.0
-        var outX = Array(_unsafeUninitializedCapacity: performanceDataSize, initializingWith:0.0)
-        var outY = Array(_unsafeUninitializedCapacity: performanceDataSize, initializingWith:0.0)
-        var outZ = Array(_unsafeUninitializedCapacity: performanceDataSize, initializingWith:0.0)
+        var outX = Array<Double>(repeating: 0, count: performanceDataSize)
+        var outY = Array<Double>(repeating: 0, count: performanceDataSize)
+        var outZ = Array<Double>(repeating: 0, count: performanceDataSize)
         
         test = RawFilter()
         for index in 0..<performanceDataSize {
-            (outX[index], outY[index], outZ[index]) = test.filter(arrX[index], y: arrY[index], z: arrZ[index])
+            (outX[index], outY[index], outZ[index]) = test.filter(x: arrX[index], y: arrY[index], z: arrZ[index])
         }
-        resultX = standardDeviation(outX)
-        resultY = standardDeviation(outY)
-        resultZ = standardDeviation(outZ)
+        resultX = standardDeviation(arr: outX)
+        resultY = standardDeviation(arr: outY)
+        resultZ = standardDeviation(arr: outZ)
         print("Raw       :", resultX, resultY, resultZ)
         
         test = ThreePointFilter()
         for index in 0..<performanceDataSize {
-            (outX[index], outY[index], outZ[index]) = test.filter(arrX[index], y: arrY[index], z: arrZ[index])
+            (outX[index], outY[index], outZ[index]) = test.filter(x: arrX[index], y: arrY[index], z: arrZ[index])
         }
-        resultX = standardDeviation(outX)
-        resultY = standardDeviation(outY)
-        resultZ = standardDeviation(outZ)
+        resultX = standardDeviation(arr: outX)
+        resultY = standardDeviation(arr: outY)
+        resultZ = standardDeviation(arr: outZ)
         print("ThreePoint:", resultX, resultY, resultZ)
     }
 

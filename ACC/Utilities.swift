@@ -23,7 +23,7 @@ struct Matrix {
         self.rows = rows
         self.columns = columns
         self.shape = (rows, columns)
-        grid = Array(_unsafeUninitializedCapacity: rows * columns, initializingWith: 0.0)
+        grid = Array<Double>(repeating: 0, count: rows * columns)
     }
     func indexIsValid(row: Int, column: Int) -> Bool {
         return row >= 0 && row < rows && column >= 0 && column < columns
@@ -68,16 +68,16 @@ struct Matrix {
          */
         return results
     }
-    func invert(matrix : [Double]) -> [Double] {
-        var inMatrix = matrix
-        var N = __CLPK_integer(sqrt(Double(matrix.count)))
-        var pivots = [__CLPK_integer](_unsafeUninitializedCapacity: Int(N), initializingWith: 0)
-        var workspace = [Double](_unsafeUninitializedCapacity: Int(N), initializingWith: 0.0)
-        var error : __CLPK_integer = 0
-        dgetrf_(&N, &N, &inMatrix, &N, &pivots, &error)
-        dgetri_(&N, &inMatrix, &N, &pivots, &workspace, &N, &error)
-        return inMatrix
-    }
+//    func invert(matrix : [Double]) -> [Double] {
+//        var inMatrix = matrix
+//        var N = __CLPK_integer(sqrt(Double(matrix.count)))
+//        var pivots = Array<__CLPK_integer>(repeating: 0, count: Int(N))
+//        var workspace = Array<Double>(repeating: 0, count: Int(N))
+//        var error : __CLPK_integer = 0
+//        dgetrf_(&N, &N, &inMatrix, &N, &pivots, &error)
+//        dgetri_(&N, &inMatrix, &N, &pivots, &workspace, &N, &error)
+//        return inMatrix
+//    }
     
     //inverse
 }

@@ -26,7 +26,7 @@ class MapViewController: UIViewController, DataProcessorDelegate {
             
             // add pinch gesture recog
             mapView.addGestureRecognizer(UIPinchGestureRecognizer(
-                target: self, action: #selector(MapViewController.changeScale(_:))
+                target: self, action: #selector(MapViewController.changeScale(recognizer:))
                 ))
             
             // add swipe gestures recog
@@ -52,7 +52,7 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     /* MARK: Gesture Functions */
     var pinchScale: CGFloat = 1
     
-    func changeScale(recognizer: UIPinchGestureRecognizer) {
+    @objc func changeScale(recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
         case .changed, .ended:
             pinchScale *= recognizer.scale
@@ -134,7 +134,7 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     // MARK: Override functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.defaultCenter().addObserver(self, selector: #selector(receiveDataSource(_:)), name:"dataSource", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveDataSource(notification:)), name:NSNotification.Name(rawValue: "dataSource"), object: nil)
         
         // Objects setup
         gradientView.colorSetUp(topColor: UIColor.white.cgColor, bottomColor: UIColor.cyan.withAlphaComponent(0.5).cgColor)
@@ -169,7 +169,7 @@ class MapViewController: UIViewController, DataProcessorDelegate {
     }
     
     // MARK: Notification center functions
-    func receiveDataSource(notification: NSNotification) {
+    @objc func receiveDataSource(notification: NSNotification) {
         if let source = notification.object as? DataProcessor {
             dataSource = source
             dataSource!.startsDetection()
