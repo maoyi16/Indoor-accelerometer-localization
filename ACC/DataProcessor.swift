@@ -22,7 +22,7 @@ enum speedDataType {
 }
 
 class DataProcessor {
-
+    
     // MARK: delegate
     var delegate: DataProcessorDelegate? = nil
     
@@ -110,7 +110,10 @@ class DataProcessor {
         })
         
         motionManager.startGyroUpdates(to: OperationQueue.current!, withHandler: { (gyroData: CMGyroData?, NSError) -> Void in
-            self.outputRotData(rotation: gyroData!.rotationRate)
+            if let data = gyroData?.rotationRate {
+                self.outputRotData(rotation: data)
+            }
+            
             if NSError != nil {
                 print("\(String(describing: NSError))")
             }
@@ -125,7 +128,7 @@ class DataProcessor {
             }
         })
     }
-  
+    
     func reset() {
         accSys.reset()
         gyroSys.reset()
@@ -134,7 +137,7 @@ class DataProcessor {
     
     // MARK: Functions
     func XArbitraryCorrectedZVertical(motion: CMDeviceMotion) {
-      
+        
         let acc: CMAcceleration = motion.userAcceleration
         //print(acc)
         let rot = motion.attitude.rotationMatrix
@@ -195,7 +198,7 @@ class DataProcessor {
             
             newStatus(status: "dynamic state") // sending status to delegate
             
-
+            
             if fabs(absSys.accelerate.x) > accelerationThreshold {
                 absSys.velocity.x += absSys.accelerate.x * deviceMotionUpdateInterval
                 absSys.distance.x += absSys.velocity.x * deviceMotionUpdateInterval
@@ -210,7 +213,7 @@ class DataProcessor {
             }
         }
     }
-
+    
     func outputAccData(acceleration: CMAcceleration) {
         
         accSys.accelerate.x = acceleration.x * gravityConstant
@@ -220,7 +223,7 @@ class DataProcessor {
         
         
         /*
-        print(modulus(accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z) - gravityConstant, modulus(gyroSys.accelerate.x, y: gyroSys.accelerate.y, z: gyroSys.accelerate.z), modulusDiff, staticStateJudge)*/
+         print(modulus(accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z) - gravityConstant, modulus(gyroSys.accelerate.x, y: gyroSys.accelerate.y, z: gyroSys.accelerate.z), modulusDiff, staticStateJudge)*/
         
         // Static Judgement Condition 3
         modulusDiffCalculation()
@@ -246,18 +249,21 @@ class DataProcessor {
         gyroSys.accelerate.y = rotation.y
         gyroSys.accelerate.z = rotation.z
         
-        let attitude = motionManager.deviceMotion!.attitude
-        gyroSys.rotation.pitch = attitude.pitch*180/Double.pi
-        gyroSys.rotation.roll = attitude.roll*180/Double.pi
-        gyroSys.rotation.yaw = attitude.yaw*180/Double.pi
-        
-        newData(type: speedDataType.rotation, sensorData: gyroSys.rotation)
-        
-        // Static Judgement Condition 2
-        if modulus(x: gyroSys.accelerate.x, y: gyroSys.accelerate.y, z: gyroSys.accelerate.z) < staticStateJudgeThreshold.gyroModulus {
-            staticStateJudge.modulGyro = true
-        } else {
-            staticStateJudge.modulGyro = false
+        //        motionManager.devicemotion
+        if let motion = motionManager.deviceMotion {
+            let attitude = motion.attitude
+            gyroSys.rotation.pitch = attitude.pitch*180/Double.pi
+            gyroSys.rotation.roll = attitude.roll*180/Double.pi
+            gyroSys.rotation.yaw = attitude.yaw*180/Double.pi
+            
+            newData(type: speedDataType.rotation, sensorData: gyroSys.rotation)
+            
+            // Static Judgement Condition 2
+            if modulus(x: gyroSys.accelerate.x, y: gyroSys.accelerate.y, z: gyroSys.accelerate.z) < staticStateJudgeThreshold.gyroModulus {
+                staticStateJudge.modulGyro = true
+            } else {
+                staticStateJudge.modulGyro = false
+            }
         }
     }
     
@@ -316,7 +322,7 @@ class DataProcessor {
         resultZ = standardDeviation(arr: outZ)
         print("ThreePoint:", resultX, resultY, resultZ)
     }
-
+    
 }
 
 
