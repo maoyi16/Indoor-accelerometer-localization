@@ -201,16 +201,16 @@ class DataProcessor {
             
             if fabs(absSys.accelerate.x) > accelerationThreshold {
                 absSys.velocity.x += absSys.accelerate.x * deviceMotionUpdateInterval
-                absSys.distance.x += absSys.velocity.x * deviceMotionUpdateInterval
             }
+            absSys.distance.x += absSys.velocity.x * deviceMotionUpdateInterval
             if fabs(absSys.accelerate.y) > accelerationThreshold {
                 absSys.velocity.y += absSys.accelerate.y * deviceMotionUpdateInterval
-                absSys.distance.y += absSys.velocity.y * deviceMotionUpdateInterval
             }
+            absSys.distance.y += absSys.velocity.y * deviceMotionUpdateInterval
             if fabs(absSys.accelerate.z) > accelerationThreshold {
                 absSys.velocity.z += absSys.accelerate.z * deviceMotionUpdateInterval
-                absSys.distance.z += absSys.velocity.z * deviceMotionUpdateInterval
             }
+            absSys.distance.z += absSys.velocity.z * deviceMotionUpdateInterval
         }
     }
     

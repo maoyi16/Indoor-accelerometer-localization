@@ -157,34 +157,34 @@ class KalmanFilter : Filter {
     }
 }
 
-func SimpleLinearRegression (x: [Double], y: [Double]) -> (Double, Double) {
-    
-    // x and y should be arrays of points. 
-    
-    var xbar = 0.0
-    var ybar = 0.0
-    var xybar = 0.0
-    var xsqbar = 0.0
-    let arrayLength = x.count
-    var linearCoef = (slope: 0.0, intercept: 0.0)
-    
-    for i in 0..<arrayLength {
-        xbar += x[i]
-        ybar += y[i]
-        xybar += x[i] * y[i]
-        xsqbar += x[i] * x[i]
-    }
-    
-    xbar /= Double(arrayLength)
-    ybar /= Double(arrayLength)
-    xybar /= Double(arrayLength)
-    xsqbar /= Double(arrayLength)
-    
-    linearCoef.slope = (xybar - xbar*ybar) / (xsqbar - xbar*xbar)
-    linearCoef.intercept = ybar - linearCoef.slope*xbar
-    
-    return linearCoef
-}
+//func SimpleLinearRegression (x: [Double], y: [Double]) -> (Double, Double) {
+//
+//    // x and y should be arrays of points.
+//
+//    var xbar = 0.0
+//    var ybar = 0.0
+//    var xybar = 0.0
+//    var xsqbar = 0.0
+//    let arrayLength = x.count
+//    var linearCoef = (slope: 0.0, intercept: 0.0)
+//
+//    for i in 0..<arrayLength {
+//        xbar += x[i]
+//        ybar += y[i]
+//        xybar += x[i] * y[i]
+//        xsqbar += x[i] * x[i]
+//    }
+//
+//    xbar /= Double(arrayLength)
+//    ybar /= Double(arrayLength)
+//    xybar /= Double(arrayLength)
+//    xsqbar /= Double(arrayLength)
+//
+//    linearCoef.slope = (xybar - xbar*ybar) / (xsqbar - xbar*xbar)
+//    linearCoef.intercept = ybar - linearCoef.slope*xbar
+//
+//    return linearCoef
+//}
 
 // this STDEV function is from github: https://gist.github.com/jonelf/9ae2a2133e21e255e692
 func standardDeviation(arr : [Double]) -> Double
