@@ -39,15 +39,15 @@ class DataProcessor {
     var sum = 0.0
     
     // MARK: System parameters setup
-    let gravityConstant = 9.80665
+    let gravityConstant = 9.81457
     let publicDB = UserDefaults.standard
     var accelerometerUpdateInterval: Double = 0.01
     var gyroUpdateInterval: Double = 0.01
-    var deviceMotionUpdateInterval: Double = 0.03
-    let accelerationThreshold = 0.001
+    var deviceMotionUpdateInterval: Double = 0.01
+    let accelerationThreshold = 0.0
     var staticStateJudgeThreshold = (accModulus: 0.25, gyroModulus: 0.2, modulusDiff: 0.05)
     
-    var calibrationTimeAssigned: Int = 100
+//    var calibrationTimeAssigned: Int = 100
     
     // MARK: Instance variables
     var motionManager = CMMotionManager()
@@ -93,6 +93,11 @@ class DataProcessor {
     var performanceDataSize = 100
     var executePerformanceCompare = false
     
+    
+    // MARK: motion activity manager
+    var motionActivityManager = CMMotionActivityManager()
+    var is_stationary = true
+    
     func startsDetection() {
         
         // Set Motion Manager Properties
@@ -119,14 +124,21 @@ class DataProcessor {
             }
         })
         
-        motionManager.startDeviceMotionUpdates(using: CMAttitudeReferenceFrame.xArbitraryCorrectedZVertical , to: OperationQueue.current!, withHandler: { (motion,  error) in
+        motionManager.startDeviceMotionUpdates(using: CMAttitudeReferenceFrame.xTrueNorthZVertical , to: OperationQueue.current!, withHandler: { (motion,  error) in
             if motion != nil {
-                self.XArbitraryCorrectedZVertical(motion: motion!)
+                self.trueNorth(motion: motion!)
             }
             if error != nil {
                 print("\(String(describing: error))")
             }
         })
+        motionActivityManager.startActivityUpdates(to: OperationQueue.current!) { (motion) in
+            if motion?.stationary == false {
+                self.is_stationary = false
+            } else {
+                self.is_stationary = true
+            }
+        }
     }
     
     func reset() {
@@ -136,7 +148,7 @@ class DataProcessor {
     }
     
     // MARK: Functions
-    func XArbitraryCorrectedZVertical(motion: CMDeviceMotion) {
+    func trueNorth(motion: CMDeviceMotion) {
         
         let acc: CMAcceleration = motion.userAcceleration
         //print(acc)
@@ -184,21 +196,18 @@ class DataProcessor {
     }
     
     func determineVelocityAndCoculateDistance() {
-        
-        // Static Judgement Condition 1 && 2 && 3
-        if staticStateJudge.modulAcc && staticStateJudge.modulGyro && staticStateJudge.modulDiffAcc {
-            
+        if is_stationary {
             newStatus(status: "static state") // sending status to delegate
-            
+            absSys.accelerate.x = 0
+            absSys.accelerate.y = 0
+            absSys.accelerate.z = 0
             absSys.velocity.x = 0
             absSys.velocity.y = 0
             absSys.velocity.z = 0
-            
+
         } else {
-            
+        
             newStatus(status: "dynamic state") // sending status to delegate
-            
-            
             if fabs(absSys.accelerate.x) > accelerationThreshold {
                 absSys.velocity.x += absSys.accelerate.x * deviceMotionUpdateInterval
             }
@@ -215,12 +224,12 @@ class DataProcessor {
     }
     
     func outputAccData(acceleration: CMAcceleration) {
-        
+        // In phone's frame
         accSys.accelerate.x = acceleration.x * gravityConstant
         accSys.accelerate.y = acceleration.y * gravityConstant
         accSys.accelerate.z = acceleration.z * gravityConstant
         
-        
+//        print(acceleration.x, acceleration.y, acceleration.z)
         
         /*
          print(modulus(accSys.accelerate.x, y: accSys.accelerate.y, z: accSys.accelerate.z) - gravityConstant, modulus(gyroSys.accelerate.x, y: gyroSys.accelerate.y, z: gyroSys.accelerate.z), modulusDiff, staticStateJudge)*/
@@ -248,6 +257,8 @@ class DataProcessor {
         gyroSys.accelerate.x = rotation.x
         gyroSys.accelerate.y = rotation.y
         gyroSys.accelerate.z = rotation.z
+        
+//        print(rotation.x, rotation.y,  rotation.z)
         
         //        motionManager.devicemotion
         if let motion = motionManager.deviceMotion {
