@@ -12,7 +12,7 @@ import CoreMotion
 protocol DataProcessorDelegate {
     func sendingNewData(person: DataProcessor, type: speedDataType, data: ThreeAxesSystemDouble)
     func sendingNewStatus(person: DataProcessor, status: String)
-    func sendingAltitude(data: Double)
+    func sendingFloorChangeSourceData(source: FloorChangeSource, val: Double)
     func sendingFloorChange(source: FloorChangeSource, change: Int)
 }
 
@@ -170,7 +170,7 @@ class DataProcessor {
         altimeter.startRelativeAltitudeUpdates(to: OperationQueue.current!) { (data, error) in
             if let relative_altitude = data?.relativeAltitude {
                 let altitude = Double(truncating: relative_altitude)
-                self.delegate?.sendingAltitude(data: altitude)
+                self.delegate?.sendingFloorChangeSourceData(source: .altitude, val: altitude)
                 let cur_floor: Int = Int(altitude / self.altitude_floor_height)
                 if cur_floor != self.altitude_floor {
                     self.delegate?.sendingFloorChange(source: .altitude, change: cur_floor - self.altitude_floor)
@@ -196,6 +196,7 @@ class DataProcessor {
             initial_pitch = motion.attitude.pitch
         }
         let pitch = motion.attitude.pitch - initial_pitch!
+        delegate?.sendingFloorChangeSourceData(source: .rotation, val: pitch)
         if  fabs(pitch) > pitch_upperbound {
             pitch_pending_floor_change = pitch > 0 ? 1 : -1
         }
@@ -241,6 +242,8 @@ class DataProcessor {
         newData(type: speedDataType.distance, sensorData: absSys.distance)
         
         // Floor change from acceleration
+        delegate?.sendingFloorChangeSourceData(source: .acceleration, val: absSys.velocity.z)
+        
         if fabs(absSys.velocity.z) > velocity_z_upperbound {
             velocity_pending_floor_change = absSys.velocity.z > 0 ? 1 : -1
         }

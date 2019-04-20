@@ -93,12 +93,12 @@ class ViewController: UIViewController, DataProcessorDelegate {
         }
     }
     
-    func sendingAltitude(data: Double) {
-        print("Altitude", data)
+    func sendingFloorChangeSourceData(source: FloorChangeSource, val: Double) {
+        print("Source:", source, ", val =", val)
     }
     
     func sendingFloorChange(source: FloorChangeSource, change: Int) {
-        print("Detected floor change", change, "from", source)
+        print("Detected floor change", change, ", from", source)
     }
     
     func sendingNewStatus(person: DataProcessor, status: String) {

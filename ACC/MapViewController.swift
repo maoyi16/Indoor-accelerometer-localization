@@ -200,11 +200,11 @@ class MapViewController: UIViewController, DataProcessorDelegate {
         // intentionally left blank in order to conform to the protocol
     }
     
-    func sendingAltitude(data: Double) {
-        print("Altitude change", data)
+    func sendingFloorChangeSourceData(source: FloorChangeSource, val: Double) {
+        print("Source:", source, ", val =", val)
     }
     
     func sendingFloorChange(source: FloorChangeSource, change: Int) {
-        print("Detected floor change", change, "from", source)
+        print("Detected floor change", change, ", from", source)
     }
 }
