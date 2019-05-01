@@ -102,6 +102,7 @@ class DataProcessor {
         altimeter.startRelativeAltitudeUpdates(to: OperationQueue.current!) { (data, error) in
             if let relative_altitude = data?.relativeAltitude {
                 self.cur_altitude = Double(truncating: relative_altitude)
+                self.delegate?.sendingFloorChangeSourceData(source: .altitude, val: self.cur_altitude)
             }
         }
     }
