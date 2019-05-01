@@ -134,7 +134,7 @@ class DataProcessor {
         if  fabs(pitch) > pitch_upperbound {
             pitch_pending_floor_change = pitch > 0 ? 1 : -1
         }
-        if fabs(pitch) <  pitch_lowerbound && pitch_pending_floor_change != 0 && cur_altitude - last_floor_altitude > floor_height_lowerbound {
+        if fabs(pitch) <  pitch_lowerbound && pitch_pending_floor_change != 0 && fabs(cur_altitude - last_floor_altitude) > floor_height_lowerbound {
             delegate?.sendingFloorChange(source: .rotation, change: pitch_pending_floor_change)
             last_floor_altitude = cur_altitude
             pitch_pending_floor_change = 0
