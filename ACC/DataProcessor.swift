@@ -70,8 +70,8 @@ class DataProcessor {
     
     // MARK: floor change from rotation
     var initial_pitch: Double?
-    let pitch_upperbound = 20.0
-    let pitch_lowerbound = 5.0
+    let pitch_upperbound = 20.0 * Double.pi / 180
+    let pitch_lowerbound = 5.0 * Double.pi / 180
     var pitch_pending_floor_change = 0
     
     var pre_ts:Double? = nil
