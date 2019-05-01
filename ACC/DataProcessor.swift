@@ -110,6 +110,15 @@ class DataProcessor {
         absSys.reset()
     }
     
+    func resetWith(vx:Double, vy:Double, vz: Double) {
+        absSys.distance.x = 0
+        absSys.distance.y = 0
+        absSys.distance.z = 0
+        absSys.velocity.x = vx
+        absSys.velocity.y = vy
+        absSys.velocity.z = vz
+    }
+    
     // MARK: Functions
     func trueNorth(motion: CMDeviceMotion) {
         
