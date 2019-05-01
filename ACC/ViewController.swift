@@ -94,7 +94,7 @@ class ViewController: UIViewController, DataProcessorDelegate {
     }
     
     func sendingFloorChangeSourceData(source: FloorChangeSource, val: Double) {
-        print("Source:", source, ", val =", val)
+//        print("Source:", source, ", val =", val)
     }
     
     func sendingFloorChange(source: FloorChangeSource, change: Int) {
